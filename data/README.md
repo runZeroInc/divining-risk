@@ -26,7 +26,7 @@ point to make sure that Parquet and DuckDB were doing the right thing.)
 
 This is useful for running `check-kev.sh` or doing other KEV-ish things.
 
-### Collect CISA KEVs
+### Collect CISA KEV
 
 ```
 curl -s https://raw.githubusercontent.com/cisagov/kev-data/refs/heads/develop/known_exploited_vulnerabilities.csv | cut -d, -f1 | tail -n +2 > CISA-KEV.txt
