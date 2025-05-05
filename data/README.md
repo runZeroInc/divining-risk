@@ -16,7 +16,7 @@ Once you have the compressed CSV files, run `build-epss-matrix.py`. This require
 `pip install`ed the `panda` and `duckdb` libraries. In my own environment, I used homebrew for the
 initial Python3 install, and then set up a virtual environment using [venv](https://docs.python.org/3/library/venv.html).
 
-On a reasonably modern MacBook, this should take only a minute or two.
+On a reasonably modern MacBook, this should take only a minute or two for 30 days of data.
 
 (My original attempts at all this analysis relied on shell scripts to manually grep through
 EPSS scores, and it took days and days to build the CSVs, but at least it gave me a reference
