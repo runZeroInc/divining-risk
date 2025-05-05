@@ -1,6 +1,6 @@
 # Data files for Divining Risk
 
-This subdirectory in this repo (https://github.com/runZeroInc/divining-risk/) is where data files are stored.
+This subdirectory in [this repo](https://github.com/runZeroInc/divining-risk/) is where data files are stored.
 If you'd like to recreate the research, this repo has copies of the data files at the time of writing. Of course,
 you might want to rerun things later with new data.
 
