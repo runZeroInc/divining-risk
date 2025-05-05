@@ -18,7 +18,7 @@ initial Python3 install, and then set up a virtual environment using [venv](http
 
 On a reasonably modern MacBook, this should take only a minute or two for 30 days of data.
 
-(My original attempts at all this analysis relied on shell scripts to manually grep through
+(My original attempts at all this analysis relied on shell scripts to grep through
 EPSS scores, and it took days and days to build the CSVs, but at least it gave me a reference
 point to make sure that Parquet and DuckDB were doing the right thing.)
 
