@@ -1,6 +1,7 @@
-# diving-risk
+# Divining Risk
 
-Materials created and used in support of "Divining Risk: Deciphering Signals From Vulnerability Scores," a research paper by runZero first published in May, 2025. The paper is available at hxxp://runzero.com/link-to-paper.
+Materials created and used in support of [Divining Risk: Deciphering Signals From Vulnerability Scores](https://www.runzero.com/resources/deciphering-signals-from-vulnerability-scores/)
+a research paper by runZero first published in May, 2025.
 
 ## Scripts provided
 
@@ -21,6 +22,8 @@ These scripts should not be used in, or linked to, any production environment.
 
 They take untrusted user-provided input, often by relative directory reference,
 and are certainly exploitable with directory traversal, SQL injection, deserialization,
-and probably other techniques, if you provide weird inputs.
+and probably other techniques, if you provide weird enough inputs.
 
-Don't do it. I imagine someone will troll me by assigning CVEs for these vulnerabilities anyway.
+Don't do it.
+
+(I imagine someone will troll me by assigning CVEs for these vulnerabilities anyway.)

@@ -38,8 +38,8 @@ Alas, there's no simple `curl` I could find to do this, but I imagine it's possi
 
 - Sign up for a community account.
 - Go to https://docs.vulncheck.com/indices/vulncheck-intelligence#vulncheck-kev
-- Click Browse the Vulncheck KEV index.
-- Click Download Vulncheck KEV backup.
+- Click **Browse the Vulncheck KEV** index.
+- Click **Download Vulncheck KEV** backup.
 - Expand the ZIP with your preferred unarchiver.
 - `jq -r '.[].cve[]' ~/Downloads/vulncheck_known_exploited_vulnerabilities.json > VulnCheck-KEV.txt`
 
