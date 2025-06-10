@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create this with detect_significant_changes.py, in this repo
-significant_changes_file="./data/top-20-positive-changes.csv"
+significant_changes_file="./data/significant-changes.csv"
 
 # KEV files, collected per the instructions in ./data
 cisa_kev_file="./data/CISA-KEV.txt"

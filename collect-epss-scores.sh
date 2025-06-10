@@ -9,11 +9,11 @@ fi
 
 mkdir -p ./data/epss-csv
 
-start_date="2025-03-17"
-end_date="2025-04-15"
+# Defaults are what was originally published
+start_date="${START_DATE:-2025-03-17}"
+end_date="${END_DATE:-2025-04-15}"
 
 current_date="$start_date"
-
 one_day_after_end=$($DATE_BIN -I -d "$end_date + 1 day")
 
 while [[ "$current_date" != "$one_day_after_end" ]]; do
