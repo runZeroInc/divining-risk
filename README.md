@@ -16,6 +16,25 @@ a research paper by runZero first published in May, 2025.
 
 For convenience, a number of data files are provided for reference. See [data/README](data/README.md) for details on how to recreate these.
 
+## Steps to Reproduce
+
+You might be interested in re-running these experiments with fresh data. Here's how!
+
+```bash
+# Start fresh
+rm data/parquet/*
+rm data/epss-csv/*
+# Set start and end dates and collect EPSS scores.
+START_DATE=2025-05-11 END_DATE=2025-06-09 ./collect-epss-scores.sh
+# Generate Parquet files
+python3 build-epss-matrix.py
+# Check for significant changes
+python3 detect-significant-changes.py --magnitude 0.50 --days 1
+# Check if any are already in CISA's KEV
+curl -s https://raw.githubusercontent.com/cisagov/kev-data/refs/heads/develop/known_exploited_vulnerabilities.csv | cut -d, -f1 | tail -n +2 > data/CISA-KEV.txt
+./check-kev.sh
+```
+
 ## Security Warning
 
 These scripts should not be used in, or linked to, any production environment.
