@@ -35,6 +35,8 @@ curl -s https://raw.githubusercontent.com/cisagov/kev-data/refs/heads/develop/kn
 ./check-kev.sh
 ```
 
+Note that the python bits require Python3 and the panda and duckdb libraries (available with `pip install`) to create the Parquet-formatted wide matrix.
+
 ## Security Warning
 
 These scripts should not be used in, or linked to, any production environment.
