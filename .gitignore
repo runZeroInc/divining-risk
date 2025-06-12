@@ -1,2 +1,4 @@
 .DS_Store
 .envrc
+data/parquet
+data/epss-csv
