@@ -2,3 +2,5 @@
 .envrc
 data/parquet
 data/epss-csv
+data/epss_matrix.csv
+data/epss_matrix.parquet
