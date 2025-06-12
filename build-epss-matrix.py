@@ -3,6 +3,11 @@ import glob
 import pandas as pd
 import duckdb
 import re
+import time
+
+def log(msg):
+    timestamp = time.strftime("[%a %b %d %H:%M:%S %Z %Y]")
+    print(f"{timestamp} {msg}")
 
 # Configuration details
 csv_folder = './data/epss-csv/'         # Folder where your CSV files live
@@ -14,7 +19,7 @@ output_csv = './data/epss_matrix.csv'  # Output file
 os.makedirs(parquet_folder, exist_ok=True)
 
 # Convert compressed CSVs to Parquet
-print("Converting CSVs to Parquet...")
+log("Converting CSVs to Parquet...")
 
 for csv_path in sorted(glob.glob(os.path.join(csv_folder, '*.csv.gz'))):
 
@@ -22,18 +27,18 @@ for csv_path in sorted(glob.glob(os.path.join(csv_folder, '*.csv.gz'))):
     # Extract date from filename
     match = re.search(r'(\d{4}-\d{2}-\d{2})', filename)
     if not match:
-        print(f"Skipping {filename}, no valid date found.")
+        log("Skipping {filename}, no valid date found.")
         continue
     date = match.group(1)
     parquet_path = os.path.join(parquet_folder, f"{date}.parquet")
 
     # Skip if we've done this already
     if os.path.exists(parquet_path):
-        print(f"Skipping {filename}, Parquet already exists.")
+        log(f"Skipping {filename}, Parquet already exists.")
         continue
 
     # Read the CSV, handling the comment lines and missing values, and only keep the 'epss' column. Skip any we've done.
-    print(f"Converting {filename} to Parquet...")
+    log(f"Converting {filename} to Parquet...")
     df = pd.read_csv(
         csv_path,
         compression='infer',
@@ -44,7 +49,7 @@ for csv_path in sorted(glob.glob(os.path.join(csv_folder, '*.csv.gz'))):
     df = df[['cve', 'epss', 'date']]
     df.to_parquet(parquet_path, index=False)
 
-print("Building wide matrix using DuckDB...")
+log("Building wide matrix using DuckDB...")
 
 all_dates = sorted([
     os.path.basename(p).replace('.parquet', '')
@@ -73,9 +78,9 @@ SELECT * FROM pivoted
 con = duckdb.connect(database=':memory:')
 result_df = con.execute(query).fetchdf()
 
-print(f"Saving Parquet matrix to {output_parquet}")
+log(f"Saving Parquet matrix to {output_parquet}")
 result_df.to_parquet(output_parquet, index=False)
-print(f"Saving CSV to {output_csv}")
+log(f"Saving CSV to {output_csv}")
 result_df.to_csv(output_csv, index=False)
 
-print("Done!")
+log("Done!")
