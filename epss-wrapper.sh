@@ -6,7 +6,7 @@ python3 build-epss-matrix.py
 python3 detect-significant-changes.py --magnitude 0.50 --days 1
 # Check if any are already in CISA's KEV
 # Experiment with pinning the cert.
-    curl -s https://raw.githubusercontent.com/cisagov/kev-data/refs/heads/develop/known_exploited_vulnerabilities.csv \
-    --pinnedpubkey "sha256//1FtgkXeU53bUTaObUogizKNIqs/ZGaEo1k2AwG30xts=" \
-        | cut -d, -f1 | tail -n +2 > data/CISA-KEV.txt
-./check-kev.sh
+#    curl -s https://raw.githubusercontent.com/cisagov/kev-data/refs/heads/develop/known_exploited_vulnerabilities.csv \
+#    --pinnedpubkey "sha256//1FtgkXeU53bUTaObUogizKNIqs/ZGaEo1k2AwG30xts=" \
+#        | cut -d, -f1 | tail -n +2 > data/CISA-KEV.txt
+# ./check-kev.sh
