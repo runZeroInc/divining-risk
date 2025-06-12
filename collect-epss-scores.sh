@@ -25,12 +25,12 @@ while [[ "$current_date" != "$one_day_after_end" ]]; do
     if [[ -f "$output" ]]; then
         echo "[$now] File exists: $file. Skipping."
     else
-        url="https://epss.cyentia.com/$file"
+        url="https://epss.empiricalsecurity.com/$file"
         echo "[$now] Downloading $file..."
         # This experiments with public key pinning. Maybe these will survive refreshes?
         # Check back after July 28, 2025
-        curl -Ls --retry 3 --retry-delay 5 \
-        --pinnedpubkey "sha256//jRUOvjFJPOPvl0fy+Q4hGlSIPs/KTsGrZMFB/TMUp7c=;sha256//E6Cgac00T+woMzsm1dkWP6vOq0K7Gs7wEI7Y43/5/E4=" \
+        curl -v --retry 3 --retry-delay 5 \
+        --pinnedpubkey "sha256//E6Cgac00T+woMzsm1dkWP6vOq0K7Gs7wEI7Y43/5/E4=" \
         -o "$output" "$url" || {
             echo "[$now] !! Failed to download $file. Continuing..."
         }
