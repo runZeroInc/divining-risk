@@ -25,8 +25,15 @@ for csv_path in sorted(glob.glob(os.path.join(csv_folder, '*.csv.gz'))):
         print(f"Skipping {filename}, no valid date found.")
         continue
     date = match.group(1)
+    parquet_path = os.path.join(parquet_folder, f"{date}.parquet")
 
-    # Read the CSV, handling the comment lines and missing values, and only keep the 'epss' column
+    # Skip if we've done this already
+    if os.path.exists(parquet_path):
+        print(f"Skipping {filename}, Parquet already exists.")
+        continue
+
+    # Read the CSV, handling the comment lines and missing values, and only keep the 'epss' column. Skip any we've done.
+    print(f"Converting {filename} to Parquet...")
     df = pd.read_csv(
         csv_path,
         compression='infer',
@@ -35,7 +42,6 @@ for csv_path in sorted(glob.glob(os.path.join(csv_folder, '*.csv.gz'))):
     )
     df['date'] = date
     df = df[['cve', 'epss', 'date']]
-    parquet_path = os.path.join(parquet_folder, f"{date}.parquet")
     df.to_parquet(parquet_path, index=False)
 
 print("Building wide matrix using DuckDB...")
