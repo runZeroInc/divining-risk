@@ -47,6 +47,7 @@ WHERE row_num = 1
 
 # Run and save results
 result_df = con.execute(final_query).fetchdf()
+result_df['change'] = result_df['change'].round(5)
 
 # Sort: Most positive change first, most negative last
 result_df = result_df.sort_values("change", ascending=False)
