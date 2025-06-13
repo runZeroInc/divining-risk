@@ -1,6 +1,11 @@
 import duckdb
 import argparse
 import os
+import time
+
+def log(msg):
+    timestamp = time.strftime("[%a %b %d %H:%M:%S %Z %Y]")
+    print(f"{timestamp} {msg}")
 
 # Argument parsing
 parser = argparse.ArgumentParser()
@@ -19,19 +24,19 @@ args = parser.parse_args()
 # Determine mode
 
 if args.absolute:
-    print("Searching for absolute changes (more recent changes mask earlier changes).")
+    log("Searching for absolute changes (more recent changes mask earlier changes).")
     mode = "absolute"
 elif args.positive and args.negative:
-    print("Both --positive and --negative specified; defaulting to absolute mode (more recent changes mask earlier changes).")
+    log("Both --positive and --negative specified; defaulting to absolute mode (more recent changes mask earlier changes).")
     mode = "absolute"
 elif args.positive:
-    print("Searching positive changes only (more recent changes mask negative changes).")
+    log("Searching positive changes only (more recent changes mask negative changes).")
     mode = "positive"
 elif args.negative:
-    print("Searching negative changes only (more recent changes mask positive changes).")
+    log("Searching negative changes only (more recent changes mask positive changes).")
     mode = "negative"
 else:
-    print("Searching for absolute changes (more recent changes mask earlier changes).")
+    log("Searching for absolute changes (more recent changes mask earlier changes).")
     mode = "absolute"
 
 # Load the matrix
@@ -92,7 +97,7 @@ elif args.sort == "date-asc":
 
 # Save full result CSV
 result_df.to_csv(args.output, index=False)
-print(f"Saved {len(result_df)} {mode} changes to {args.output} (sorted by {args.sort})")
+log(f"Saved {len(result_df)} {mode} changes to {args.output} (sorted by {args.sort})")
 
 # Show top 20 most significant changes in the selected direction
 if mode == "positive":
@@ -107,12 +112,12 @@ if not top_20.empty:
     max_cve_len = top_20.iloc[:, 0].str.len().max()
     top_20.iloc[:, 0] = top_20.iloc[:, 0].str.ljust(max_cve_len)
 
-    print(f"Top 20 most {mode} changes (|delta| ≥ {args.magnitude}):")
+    log(f"Top 20 most {mode} changes (|delta| ≥ {args.magnitude}):")
     print(top_20.to_string(index=False))
 
     # Save top 20 to a separate CSV
     top20_path = f"./data/top-20-{mode}-changes.csv"
     top_20.to_csv(top20_path, index=False)
-    print(f"Saved top 20 most {mode} changes to {top20_path}")
+    log(f"Saved top 20 most {mode} changes to {top20_path}")
 else:
-    print(f"No {mode} changes found with magnitude ≥ {args.magnitude}")
+    log(f"No {mode} changes found with magnitude ≥ {args.magnitude}")
