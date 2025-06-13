@@ -7,7 +7,8 @@ parser.add_argument('--file', default='./data/epss_matrix.parquet', help='Input 
 parser.add_argument('--output', default='./data/significant-changes.csv', help='Output CSV file')
 parser.add_argument('--magnitude', type=float, default=0.50, help='Magnitude threshold (between 0 and 1)')
 parser.add_argument('--days', type=int, default=1, help='Number of days for delta window')
-parser.add_argument('--sort', choices=['change', 'date'], default='change', help='Sort by "change" (default) or "date" (most recent first)')
+parser.add_argument('--sort', choices=['change', 'date-desc', 'date-asc'], default='change',
+    help='Sort by "change" (default), "date-desc", or "date-asc"')
 
 args = parser.parse_args()
 
@@ -54,8 +55,10 @@ result_df['change'] = result_df['change'].round(5)
 # Sort by argument
 if args.sort == "change":
     result_df = result_df.sort_values("change", ascending=False)
-elif args.sort == "date":
+elif args.sort == "date-desc":
     result_df = result_df.sort_values("date", ascending=False)
+elif args.sort == "date-asc":
+    result_df = result_df.sort_values("date", ascending=True)
 
 # Save full result CSV
 result_df.to_csv(args.output, index=False)
