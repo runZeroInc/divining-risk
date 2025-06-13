@@ -4,3 +4,5 @@ data/parquet
 data/epss-csv
 data/epss_matrix.csv
 data/epss_matrix.parquet
+data/top-20-positive-changes.csv
+data/top-20-negative-changes.csv
