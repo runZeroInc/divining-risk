@@ -1,5 +1,6 @@
 import duckdb
 import argparse
+import os
 
 # Argument parsing
 parser = argparse.ArgumentParser()
@@ -9,8 +10,29 @@ parser.add_argument('--magnitude', type=float, default=0.50, help='Magnitude thr
 parser.add_argument('--days', type=int, default=1, help='Number of days for delta window')
 parser.add_argument('--sort', choices=['change', 'date-desc', 'date-asc'], default='change',
     help='Sort by "change" (default), "date-desc", or "date-asc"')
+parser.add_argument('--positive', action='store_true', help='Only look the most recent positive changes')
+parser.add_argument('--negative', action='store_true', help='Only look for most recent negative changes')
+parser.add_argument('--absolute', action='store_true', help='Only look for most recent absolute changes')
 
 args = parser.parse_args()
+
+# Determine mode
+
+if args.absolute:
+    print("Searching for absolute changes (more recent changes mask earlier changes).")
+    mode = "absolute"
+elif args.positive and args.negative:
+    print("Both --positive and --negative specified; defaulting to absolute mode (more recent changes mask earlier changes).")
+    mode = "absolute"
+elif args.positive:
+    print("Searching positive changes only (more recent changes mask negative changes).")
+    mode = "positive"
+elif args.negative:
+    print("Searching negative changes only (more recent changes mask positive changes).")
+    mode = "negative"
+else:
+    print("Searching for absolute changes (more recent changes mask earlier changes).")
+    mode = "absolute"
 
 # Load the matrix
 con = duckdb.connect()
@@ -28,9 +50,17 @@ checks = []
 for i in range(args.days, len(date_columns)):
     newer = date_columns[i]
     older = date_columns[i - args.days]
-    diff_expr = f"ABS(\"{newer}\" - \"{older}\") >= {args.magnitude}"
-    sum_expr = f"(\"{newer}\" - \"{older}\")"
-    checks.append(f"SELECT CVE, {sum_expr} AS change, '{newer}' AS date FROM epss WHERE {diff_expr}")
+    delta_expr = f"(\"{newer}\" - \"{older}\")"
+    abs_expr = f"ABS({delta_expr}) >= {args.magnitude}"
+
+    if mode == "positive":
+        where_clause = f"{abs_expr} AND {delta_expr} > 0"
+    elif mode == "negative":
+        where_clause = f"{abs_expr} AND {delta_expr} < 0"
+    else:
+        where_clause = abs_expr
+
+    checks.append(f"SELECT CVE, {delta_expr} AS change, '{newer}' AS date FROM epss WHERE {where_clause}")
 
 # Combine into one big union
 union_query = "\nUNION\n".join(checks)
@@ -62,18 +92,27 @@ elif args.sort == "date-asc":
 
 # Save full result CSV
 result_df.to_csv(args.output, index=False)
-print(f"Saved {len(result_df)} significant changes to {args.output} (sorted descending by change)")
+print(f"Saved {len(result_df)} {mode} changes to {args.output} (sorted by {args.sort})")
 
-# Show top 20 most positive changes
-top_positive = result_df[result_df.iloc[:, 1] > 0].head(20)
+# Show top 20 most significant changes in the selected direction
+if mode == "positive":
+    top_20 = result_df[result_df['change'] > 0].head(20)
+elif mode == "negative":
+    top_20 = result_df[result_df['change'] < 0].head(20)
+else:
+    top_20 = result_df.head(20)
 
-# Pad the first column (CVE) to align cleanly
-max_cve_len = top_positive.iloc[:, 0].str.len().max()
-top_positive.iloc[:, 0] = top_positive.iloc[:, 0].str.ljust(max_cve_len)
+if not top_20.empty:
+    # Pad the first column (CVE) to align cleanly
+    max_cve_len = top_20.iloc[:, 0].str.len().max()
+    top_20.iloc[:, 0] = top_20.iloc[:, 0].str.ljust(max_cve_len)
 
-print(f"Top 20 most positive changed scores of at least {args.magnitude}")
-print(top_positive.to_string(index=False))
+    print(f"Top 20 most {mode} changes (|delta| ≥ {args.magnitude}):")
+    print(top_20.to_string(index=False))
 
-# Save top 20 most positive changes to a separate CSV
-top_positive.to_csv("./data/top-20-positive-changes.csv", index=False)
-print("Saved top 20 most positive changes to ./data/top-positive-changes.csv")
+    # Save top 20 to a separate CSV
+    top20_path = f"./data/top-20-{mode}-changes.csv"
+    top_20.to_csv(top20_path, index=False)
+    print(f"Saved top 20 most {mode} changes to {top20_path}")
+else:
+    print(f"No {mode} changes found with magnitude ≥ {args.magnitude}")
