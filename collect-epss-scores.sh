@@ -3,11 +3,10 @@
 # BSD vs Linux date implementation
 if command -v gdate >/dev/null 2>&1; then
     DATE_BIN="gdate"
-    now=`$DATE_BIN`
 else
-    echo "[$now] !! gdate not found (try brew install coreutils)"
-    # DATE_BIN="date" # This doesn't actually work :(
+    DATE_BIN="date"
 fi
+now=`$DATE_BIN`
 
 # Set sensible defaults
 start_date="${START_DATE:-2025-03-17}"
@@ -17,7 +16,11 @@ end_date="${END_DATE:-$($DATE_BIN +%F)}"
 mkdir -p ./data/epss-csv
 
 current_date="$start_date"
-one_day_after_end=$($DATE_BIN -I -d "$end_date + 1 day")
+if [[ "$DATE_BIN" == "gdate" ]]; then
+    one_day_after_end=$($DATE_BIN -I -d "$end_date + 1 day")
+else
+    one_day_after_end=$($DATE_BIN -j -v+1d -f "%Y-%m-%d" "$end_date" "+%Y-%m-%d")
+fi
 
 while [[ "$current_date" != "$one_day_after_end" ]]; do
     file="epss_scores-$current_date.csv.gz"
@@ -51,7 +54,10 @@ while [[ "$current_date" != "$one_day_after_end" ]]; do
         fi
     fi
 
-
     # Advance the date
-    current_date=$($DATE_BIN -I -d "$current_date + 1 day")
+    if [[ "$DATE_BIN" == "gdate" ]]; then
+        current_date=$($DATE_BIN -I -d "$current_date + 1 day")
+    else
+        current_date=$($DATE_BIN -j -v+1d -f "%Y-%m-%d" "$current_date" "+%Y-%m-%d")
+    fi
 done
