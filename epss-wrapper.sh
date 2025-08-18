@@ -1,5 +1,6 @@
 # Set start date to March 17, 2025, the first day of EPSSv4.
-START_DATE=2025-03-17 ./collect-epss-scores.sh
+# Database is getting big -- move to July and on.
+START_DATE=2025-07-01 ./collect-epss-scores.sh
 # Generate Parquet files
 python3 build-epss-matrix.py
 # Check for significant changes
